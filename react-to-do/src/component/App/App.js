@@ -110,12 +110,6 @@ function RenderToDoBulkActionsExample({items, completeTodo, deleteTodo}) {
         );
     }
 }
-function reloadTodos() {
-    fetch("http://localhost:5000/todos")
-        .then((response) => response.json())
-        .then((data) => setTodos(data))
-        .catch((error) => console.error("Error fetching todos:", error));
-}
 
 function App() {
     const [todos, setTodos] = React.useState([]);
@@ -144,6 +138,10 @@ function App() {
                     alert(JSON.stringify(updatedTodos, null, 2));
                 })
                 .catch((error) => console.error("Error completing todo:", error));
+        fetch("http://localhost:5000/todos")
+            .then((response) => response.json())
+            .then((data) => setTodos(data))
+            .catch((error) => console.error("Error fetching todos:", error));
     };
 
     const addTodo = (text) => {
@@ -172,6 +170,10 @@ function App() {
                 setTodos(todos.filter((todo) => parseInt(todo.id)!== parseInt(id)));
             })
             .catch((error) => console.error("Error deleting t)odo:", error));
+        fetch("http://localhost:5000/todos")
+            .then((response) => response.json())
+            .then((data) => setTodos(data))
+            .catch((error) => console.error("Error fetching todos:", error));
     };
 
     return (
