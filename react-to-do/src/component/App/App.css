@@ -1,0 +1,60 @@
+.app {
+  background: white;
+  height: 100vh;
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+}
+
+.todo-list {
+  width: 100%;
+}
+
+.todo {
+  align-items: center;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
+  display: flex;
+  font-size: 12px;
+  justify-content: space-between;
+}
+.create-todo{
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  font-size: 20px;
+}
+.mp-info-todo{
+  display: flex;
+  justify-content: space-between;
+}
+.status{
+  left: 859px;
+  padding: 2px 8px 2px 8px;
+  border-radius: 10px;
+  margin-right: 10px;
+}
+.mp-complete{
+  background: #AEE9D1;
+}
+.mp-pending{
+  background: #E4E5E7;
+}
+#mp-todo-complete{
+  color: #202223;
+  margin-right: 10px
+}
+#mp-todo-delete{
+  background: #D82C0D;
+  color: #ffffff;
+}
+.Polaris-Button{
+  background: #008060;
+  color: #ffffff;
+}
+
+.Polaris-Button--variantSecondary{
+  --pc-button-box-shadow:unset;
+}
+
