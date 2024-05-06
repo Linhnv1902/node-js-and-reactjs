@@ -110,9 +110,16 @@ function RenderToDoBulkActionsExample({items, completeTodo, deleteTodo}) {
         );
     }
 }
+function reloadTodos() {
+    fetch("http://localhost:5000/todos")
+        .then((response) => response.json())
+        .then((data) => setTodos(data))
+        .catch((error) => console.error("Error fetching todos:", error));
+}
 
 function App() {
     const [todos, setTodos] = React.useState([]);
+
     useEffect(() => {
         fetch("http://localhost:5000/todos")
             .then((response) => response.json())
@@ -120,38 +127,32 @@ function App() {
             .catch((error) => console.error("Error fetching todos:", error));
     }, []);
 
-    const completeTodo = (ids) => {
-        ids= String(ids);
-        const updatedTodos = todos.map((todo) =>
-            ids.includes(todo.id) ? { ...todo, isCompleted: true } : todo
-        );
-        setTodos(updatedTodos);
-        ids.forEach((id) => {
+    const completeTodo = (id) => {
             fetch(`http://localhost:5000/todos/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify({
-                    text: todos.find((todo) => parseInt(todo.id) === parseInt(id)).text,
-                    isCompleted: true,
-                }),
-            }).catch((error) =>
-                console.error(`Error completing todo with id ${id}:`, error)
-            );
-        });
+                body: JSON.stringify({ isCompleted: true }),
+            })
+                .then((response) => response.json())
+                .then((updatedTodo) => {
+                    const updatedTodos = todos.map((todo) =>
+                        todo.id === updatedTodo.id ? updatedTodo : todo
+                    );
+                    setTodos(updatedTodos);
+                    alert(JSON.stringify(updatedTodos, null, 2));
+                })
+                .catch((error) => console.error("Error completing todo:", error));
     };
 
     const addTodo = (text) => {
-        const lastId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), 0) + 1;
-
         fetch("http://localhost:5000/todos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                id: lastId,
                 text: text,
                 isCompleted: false,
             }),
@@ -163,33 +164,32 @@ function App() {
             .catch((error) => console.error("Error adding todo:", error));
     };
 
-    const deleteTodo = (ids) => {
-        alert(ids.split(','))
-
-        ids.forEach((id) => {
-            fetch(`http://localhost:5000/todos/${id}`, {
-                method: "DELETE",
-            }).catch((error) =>
-                console.error(`Error deleting todo with id ${id}:`, error)
-            );
-        });
+    const deleteTodo = (id) => {
+        fetch(`http://localhost:5000/todos/${id}`, {
+            method: "DELETE",
+        })
+            .then(() => {
+                setTodos(todos.filter((todo) => parseInt(todo.id)!== parseInt(id)));
+            })
+            .catch((error) => console.error("Error deleting t)odo:", error));
     };
+
     return (
         <div className="app">
             <div className="todo-list">
                 <div className="container create-todo">
                     <span>Todoes</span>
-                    <AddTodoList addTodo={addTodo}/>
+                    <AddTodoList addTodo={addTodo} />
                 </div>
                 <RenderToDoBulkActionsExample
                     items={todos}
                     completeTodo={completeTodo}
                     deleteTodo={deleteTodo}
                 />
-
             </div>
         </div>
     );
 }
 
 export default App;
+

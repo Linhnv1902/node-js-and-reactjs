@@ -47,27 +47,31 @@ router.post("/todos", async (ctx) => {
 router.put("/todos/:id", async (ctx) => {
   try {
     const { id } = ctx.params;
-    const { text, isCompleted } = ctx.request.body;
+    const { isCompleted } = ctx.request.body;
+    const ids = id.toString().split(",").map((id) => parseInt(id.trim())); // Phân tách và chuyển đổi ids thành mảng các số nguyên
     const todos = JSON.parse(
         await fs.readFile(path.join(__dirname, "todos.json"), "utf-8")
     );
-    const index = todos.findIndex((todo) => todo.id === parseInt(id));
-    if (index !== -1) {
-      todos[index] = { id: parseInt(id), text, isCompleted };
-      await fs.writeFile(
-          path.join(__dirname, "todos.json"),
-          JSON.stringify(todos, null, 2)
-      );
-      ctx.body = todos[index];
-    } else {
-      ctx.status = 404;
-      ctx.body = { error: "Todo not found" };
-    }
+
+    ids.forEach(async (id) => {
+      const index = todos.findIndex((todo) => parseInt(todo.id) ===  parseInt(id));
+      if (index !== -1) {
+        todos[index].isCompleted = isCompleted; // Chỉ cập nhật trường isCompleted
+      }
+    });
+
+    await fs.writeFile(
+        path.join(__dirname, "todos.json"),
+        JSON.stringify(todos, null, 2)
+    );
+
+    ctx.body = todos;
   } catch (error) {
     ctx.status = 500;
     ctx.body = { error: "Internal Server Error" };
   }
 });
+
 
 router.delete("/todos/:id", async (ctx) => {
   try {
@@ -75,24 +79,21 @@ router.delete("/todos/:id", async (ctx) => {
     const todos = JSON.parse(
         await fs.readFile(path.join(__dirname, "todos.json"), "utf-8")
     );
-    const index = todos.findIndex((todo) => todo.id === parseInt(id));
-    if (index !== -1) {
-      const deletedTodo = todos.splice(index, 1)[0];
-      await fs.writeFile(
-          path.join(__dirname, "todos.json"),
-          JSON.stringify(todos, null, 2)
-      );
-      ctx.body = deletedTodo;
-    } else {
-      ctx.status = 404;
-      ctx.body = { error: "Todo not found" };
-    }
+
+    const deletedIds = id.toString().split(",").map(Number);
+    const updatedTodos = todos.filter((todo) => !deletedIds.includes(todo.id));
+
+    await fs.writeFile(
+        path.join(__dirname, "todos.json"),
+        JSON.stringify(updatedTodos, null, 2)
+    );
+
+    ctx.body = { message: "Todos deleted successfully", todos: updatedTodos };
   } catch (error) {
     ctx.status = 500;
     ctx.body = { error: "Internal Server Error" };
   }
 });
-
 app.use(router.routes()).use(router.allowedMethods());
 
 const PORT = process.env.PORT || 5000;
