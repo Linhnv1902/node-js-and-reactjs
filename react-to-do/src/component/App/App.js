@@ -4,7 +4,7 @@ import '@shopify/polaris/build/esm/styles.css';
 import "./App.css";
 
 function AddTodoList({addTodo}) {
-    const [active, setActive] = useState(true);
+    const [active, setActive] = useState(false);
 
     const handleChange = useCallback(() => setActive(!active), [active]);
 
