@@ -110,7 +110,8 @@ function Header() {
         () => setModalActive((modalActive) => !modalActive),
         [],
     );
-    const [currentPage, setCurrentPage] = useState("Account");
+    //default page
+    const [currentPage, setCurrentPage] = useState("Dashboard");
 
     const toastMarkup = toastActive ? (
         <Toast onDismiss={toggleToastActive} content="Changes saved" />
@@ -177,7 +178,7 @@ function Header() {
             onNavigationToggle={toggleMobileNavigationActive}
         />
     );
-
+    //navigation
     const navigationMarkup = (
         <Navigation location="/">
             <Navigation.Section
@@ -220,7 +221,7 @@ function Header() {
     const pageTodoList = (
         <App />
     )
-
+    //add page switch navigation page
     let actualPageMarkup;
     switch (currentPage) {
         case "Dashboard":
@@ -287,7 +288,6 @@ function Header() {
     );
 
     const pageMarkup = isLoading ? loadingPageMarkup : actualPageMarkup;
-    // const pageTodoListMarkup = isLoading ? loadingPageMarkup : pageTodoList;
 
     const modalMarkup = (
         <Modal

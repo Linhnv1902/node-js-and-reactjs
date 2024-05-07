@@ -1,27 +1,12 @@
 [
   {
-    "id": 4,
-    "text": "44",
-    "isCompleted": false
-  },
-  {
-    "id": 5,
-    "text": "41241",
+    "id": 2,
+    "text": "1",
     "isCompleted": true
   },
   {
-    "id": 6,
-    "text": "4124124124214",
-    "isCompleted": true
-  },
-  {
-    "id": 8,
-    "text": "2132131",
-    "isCompleted": true
-  },
-  {
-    "id": 9,
-    "text": "31231",
+    "id": 3,
+    "text": "2",
     "isCompleted": true
   }
 ]

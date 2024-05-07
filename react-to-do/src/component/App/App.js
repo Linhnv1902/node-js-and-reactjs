@@ -1,5 +1,5 @@
-import React, {useCallback, useState, useEffect} from "react";
-import {Button, Modal, ResourceList, TextField, Text, LegacyCard, ResourceItem} from '@shopify/polaris';
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {Button, LegacyCard, Modal, ResourceItem, ResourceList, Text, TextField} from '@shopify/polaris';
 import '@shopify/polaris/build/esm/styles.css';
 import "./App.css";
 
@@ -121,30 +121,22 @@ function App() {
     }, []);
 
     const completeTodo = (ids) => {
-        ids= String(ids);
-        const updatedTodos = todos.map((todo) =>
-            ids.includes(todo.id) ? { ...todo, isCompleted: true } : todo
-        );
-        setTodos(updatedTodos);
-        ids.forEach((id) => {
-            fetch(`http://localhost:5000/todos/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    text: todos.find((todo) => parseInt(todo.id) === parseInt(id)).text,
-                    isCompleted: true,
-                }),
-            }).catch((error) =>
-                console.error(`Error completing todo with id ${id}:`, error)
-            );
-        });
-    };
+        fetch(`http://localhost:5000/todos/${ids}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ isCompleted: true }),
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                setTodos(data.todos);
+            })
+            .catch((error) => console.error("Error completing todo:", error));
 
+    };
     const addTodo = (text) => {
         const lastId = todos.reduce((maxId, todo) => Math.max(todo.id, maxId), 0) + 1;
-
         fetch("http://localhost:5000/todos", {
             method: "POST",
             headers: {
@@ -164,16 +156,26 @@ function App() {
     };
 
     const deleteTodo = (ids) => {
-        alert(ids.split(','))
-
-        ids.forEach((id) => {
-            fetch(`http://localhost:5000/todos/${id}`, {
+            fetch(`http://localhost:5000/todos/${ids}`, {
                 method: "DELETE",
-            }).catch((error) =>
-                console.error(`Error deleting todo with id ${id}:`, error)
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    setTodos(data.todos);
+                })
+                .catch((error) =>
+                console.error(`Error deleting todo with id ${ids}:`, error)
             );
-        });
     };
+    console.log(todos)
+    const TodoComponent = useCallback(() => {
+        return <RenderToDoBulkActionsExample
+            items={todos}
+            completeTodo={completeTodo}
+            deleteTodo={deleteTodo}
+        />
+    }, [todos])
+
     return (
         <div className="app">
             <div className="todo-list">
@@ -181,11 +183,7 @@ function App() {
                     <span>Todoes</span>
                     <AddTodoList addTodo={addTodo}/>
                 </div>
-                <RenderToDoBulkActionsExample
-                    items={todos}
-                    completeTodo={completeTodo}
-                    deleteTodo={deleteTodo}
-                />
+                <TodoComponent />
 
             </div>
         </div>
